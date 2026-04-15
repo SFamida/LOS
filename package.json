@@ -1,0 +1,20 @@
+{
+  "name": "los-platform",
+  "version": "1.0.0",
+  "description": "LOS Platform - Merchant and Lender Platforms",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.12"
+  }
+}

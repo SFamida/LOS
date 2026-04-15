@@ -1,0 +1,142 @@
+.sidebar {
+  width: 260px;
+  background-color: #1a222b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+  left: 0;
+  top: 0;
+}
+
+.logoContainer {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoBox {
+  background: #334155;
+  color: #fff;
+  padding: 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 1;
+  min-width: 40px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.menuSection {
+  padding: 0 12px;
+  margin-top: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.menuSection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menuSection::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menuSection::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.menuSection::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.signOut {
+  margin-top: auto;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signOut button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  cursor: pointer;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.signOut button:hover {
+  color: #fff;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.1em;
+  padding: 0 12px 12px 12px;
+  font-weight: 700;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.navItem i {
+  width: 24px;
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+.chevron {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+.navItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.navItem.active {
+  background-color: #334155;
+  color: #fff;
+}
