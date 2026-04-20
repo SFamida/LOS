@@ -65,69 +65,62 @@ export default function Dashboard() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: { [key: string]: string } = {
-      'draft': 'secondary',
-      'pending': 'warning',
-      'in-progress': 'info',
-      'approved': 'success',
-      'rejected': 'danger',
-    };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+    return (
+      <span className={`status-badge status-${status.toLowerCase()}`}>
+        {status}
+      </span>
+    );
   };
 
   const getFlowTypeBadge = (flowType: string) => {
     return (
-      <Badge bg={flowType === 'customer-led' ? 'info' : 'secondary'}>
-        {flowType === 'customer-led' ? 'Customer Led' : 'Contractor Led'}
-      </Badge>
+      <span className="flow-badge">
+        {flowType === 'customer-led' ? 'Customer' : 'Contractor'}
+      </span>
     );
   };
 
   const content = (
     <>
-      <div className="mb-4">
-        <h2>Dashboard</h2>
-        <p className="text-muted">Review and manage loan applications</p>
+      <div className="mb-5">
+        <h2 className="fw-bold mb-1">Overview</h2>
+        <p className="text-muted">Analyze your lending pipeline and application statuses</p>
       </div>
 
-      <Row className="mb-4">
+      <Row className="mb-5">
         <Col md={3}>
-          <Card>
-            <Card.Body>
-              <h5>Total Applications</h5>
-              <h2 className="text-primary">{applications.length}</h2>
-            </Card.Body>
-          </Card>
+          <div className="card stat-card">
+            <div className="stat-label">Total Applications</div>
+            <div className="stat-value text-primary-custom">{applications.length}</div>
+            <i className="fa-regular fa-file-lines stat-icon"></i>
+          </div>
         </Col>
         <Col md={3}>
-          <Card>
-            <Card.Body>
-              <h5>Pending Review</h5>
-              <h2 className="text-warning">
-                {applications.filter(a => a.status === 'pending').length}
-              </h2>
-            </Card.Body>
-          </Card>
+          <div className="card stat-card">
+            <div className="stat-label">Pending Review</div>
+            <div className="stat-value text-warning-custom">
+              {applications.filter(a => a.status === 'pending').length}
+            </div>
+            <i className="fa-regular fa-clock stat-icon"></i>
+          </div>
         </Col>
         <Col md={3}>
-          <Card>
-            <Card.Body>
-              <h5>Approved</h5>
-              <h2 className="text-success">
-                {applications.filter(a => a.status === 'approved').length}
-              </h2>
-            </Card.Body>
-          </Card>
+          <div className="card stat-card">
+            <div className="stat-label">Approved</div>
+            <div className="stat-value text-success-custom">
+              {applications.filter(a => a.status === 'approved').length}
+            </div>
+            <i className="fa-regular fa-circle-check stat-icon"></i>
+          </div>
         </Col>
         <Col md={3}>
-          <Card>
-            <Card.Body>
-              <h5>Rejected</h5>
-              <h2 className="text-danger">
-                {applications.filter(a => a.status === 'rejected').length}
-              </h2>
-            </Card.Body>
-          </Card>
+          <div className="card stat-card">
+            <div className="stat-label">Rejected</div>
+            <div className="stat-value text-danger-custom">
+              {applications.filter(a => a.status === 'rejected').length}
+            </div>
+            <i className="fa-regular fa-circle-xmark stat-icon"></i>
+          </div>
         </Col>
       </Row>
 
@@ -167,7 +160,7 @@ export default function Dashboard() {
                       <td>
                         <div className="d-flex gap-2">
                           <Button 
-                            variant="outline-primary" 
+                            className="btn-outline-custom"
                             size="sm"
                             onClick={() => router.push(`/application/${app.applicationToken}`)}
                           >
@@ -184,7 +177,7 @@ export default function Dashboard() {
                                 {approving === app.id ? 'Approving...' : 'Approve'}
                               </Button>
                               <Button 
-                                variant="danger" 
+                                className="btn-danger-custom"
                                 size="sm"
                                 onClick={() => handleReject(app.id)}
                                 disabled={approving === app.id}

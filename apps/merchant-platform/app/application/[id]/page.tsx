@@ -107,218 +107,161 @@ export default function ApplicationDetail() {
 
   const content = (
     <>
-      <Button variant="secondary" onClick={() => router.back()} className="mb-3">
-        ← Back to Applications
-      </Button>
+      <button className="back-btn" onClick={() => router.back()}>
+        <i className="fa-regular fa-circle-left"></i> Back to Applications
+      </button>
 
-      <div className="mb-4 pb-3 border-bottom">
-        <div className="d-flex justify-content-between align-items-start mb-3">
+      <div className="details-header-card">
+        <div className="header-info-group">
+          <div className="header-icon">
+            <i className="fa-regular fa-user"></i>
+          </div>
           <div>
-            <h2>
+            <div className="header-label">Applicant Name</div>
+            <div className="header-value">
               {application.basicDetails.firstName} {application.basicDetails.lastName}
-            </h2>
-            <p className="text-muted mb-0">Application ID: {application.id}</p>
+            </div>
+            <div className="header-subvalue">Application ID: {application.id}</div>
+          </div>
+        </div>
+        <div className="d-flex gap-4 align-items-center">
+          <div className="text-end">
+            <div className="header-label">Flow Type</div>
+            <div className="header-value" style={{ fontSize: '14px' }}>
+              {application.flowType === 'customer-led' ? 'Customer Led' : 'Contractor Led'}
+            </div>
           </div>
           <div className="text-end">
-            <div className="mb-2">
-              {getStatusBadge(application.status)}
-            </div>
-            <div>
-              {getFlowTypeBadge(application.flowType)}
-            </div>
+            <div className="header-label">Status</div>
+            <div className="mt-1">{getStatusBadge(application.status)}</div>
           </div>
         </div>
       </div>
 
-      {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
+      <div className="details-grid">
+        <div className="left-column">
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">
+                <i className="fa-regular fa-id-card"></i> Personal Information
+              </div>
+            </div>
+            <div className="data-section">
+              <div className="data-item">
+                <div className="data-label">First Name</div>
+                <div className="data-value">{application.basicDetails.firstName}</div>
+              </div>
+              <div className="data-item">
+                <div className="data-label">Last Name</div>
+                <div className="data-value">{application.basicDetails.lastName}</div>
+              </div>
+              <div className="data-item">
+                <div className="data-label">Email Address</div>
+                <div className="data-value">{application.basicDetails.email}</div>
+              </div>
+              <div className="data-item">
+                <div className="data-label">Phone Number</div>
+                <div className="data-value">{application.basicDetails.phoneNumber}</div>
+              </div>
+              <div className="data-item">
+                <div className="data-label">SSN</div>
+                <div className="data-value">{application.basicDetails.ssn}</div>
+              </div>
+              <div className="data-item">
+                <div className="data-label">Date of Birth</div>
+                <div className="data-value">{new Date(application.basicDetails.dateOfBirth).toLocaleDateString()}</div>
+              </div>
+            </div>
+          </div>
 
-      <Card className="mb-4">
-        <Card.Header className="bg-primary text-white">
-          <Card.Title className="mb-0">Personal Details</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Row className="mb-3">
-            <Col md={6}>
-              <div>
-                <strong>First Name:</strong>
-                <p className="text-muted">{application.basicDetails.firstName}</p>
+          {application.projectDetails && (
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">
+                  <i className="fa-regular fa-map"></i> Project Details
+                </div>
               </div>
-            </Col>
-            <Col md={6}>
-              <div>
-                <strong>Last Name:</strong>
-                <p className="text-muted">{application.basicDetails.lastName}</p>
-              </div>
-            </Col>
-          </Row>
-          <Row className="mb-3">
-            <Col md={6}>
-              <div>
-                <strong>Email Address:</strong>
-                <p className="text-muted">{application.basicDetails.email}</p>
-              </div>
-            </Col>
-            <Col md={6}>
-              <div>
-                <strong>Mobile Number:</strong>
-                <p className="text-muted">{application.basicDetails.phoneNumber}</p>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <div>
-                <strong>SSN:</strong>
-                <p className="text-muted">{application.basicDetails.ssn}</p>
-              </div>
-            </Col>
-            <Col md={6}>
-              <div>
-                <strong>Date of Birth:</strong>
-                <p className="text-muted">{new Date(application.basicDetails.dateOfBirth).toLocaleDateString()}</p>
-              </div>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-
-      {application.projectDetails && (
-        <Card className="mb-4">
-          <Card.Header className="bg-success text-white">
-            <Card.Title className="mb-0">Project Details</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <Row className="mb-3">
-              <Col md={6}>
-                <div>
-                  <strong>Expected Financing Amount:</strong>
-                  <p className="text-muted">
+              <div className="data-section">
+                <div className="data-item">
+                  <div className="data-label">Expected Financing</div>
+                  <div className="data-value">
                     ${parseFloat(application.projectDetails.expectedFinancingAmount || '0').toLocaleString('en-US', {
                       minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
                     })}
-                  </p>
-                </div>
-              </Col>
-              <Col md={6}>
-                <div>
-                  <strong>Project Type:</strong>
-                  <p className="text-muted">{application.projectDetails.projectType}</p>
-                </div>
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={12}>
-                <div>
-                  <strong>Project Address:</strong>
-                  <p className="text-muted">{application.projectDetails.projectAddress}</p>
-                </div>
-              </Col>
-            </Row>
-            {application.projectDetails.sameAsApplicantAddress && (
-              <Row>
-                <Col md={12}>
-                  <div>
-                    <strong>Applicant Address:</strong>
-                    <p className="text-muted">{application.projectDetails.applicantAddress}</p>
                   </div>
-                </Col>
-              </Row>
-            )}
-          </Card.Body>
-        </Card>
-      )}
+                </div>
+                <div className="data-item">
+                  <div className="data-label">Project Type</div>
+                  <div className="data-value">{application.projectDetails.projectType}</div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="data-label">Project Address</div>
+                <div className="data-value">{application.projectDetails.projectAddress}</div>
+              </div>
+            </div>
+          )}
 
-      {application.financialDetails && (
-        <Card className="mb-4">
-          <Card.Header className="bg-info text-white">
-            <Card.Title className="mb-0">Financial Information</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <Row className="mb-3">
-              <Col md={6}>
-                <div>
-                  <strong>Annual Income:</strong>
-                  <p className="text-muted">
+          {application.financialDetails && (
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">
+                  <i className="fa-regular fa-credit-card"></i> Financial Information
+                </div>
+              </div>
+              <div className="data-section">
+                <div className="data-item">
+                  <div className="data-label">Annual Income</div>
+                  <div className="data-value">
                     ${parseFloat(application.financialDetails.annualIncome || '0').toLocaleString('en-US', {
                       minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
                     })}
-                  </p>
+                  </div>
                 </div>
-              </Col>
-              <Col md={6}>
-                <div>
-                  <strong>Monthly Income:</strong>
-                  <p className="text-muted">
+                <div className="data-item">
+                  <div className="data-label">Monthly Income</div>
+                  <div className="data-value">
                     ${parseFloat(application.financialDetails.monthlyIncome || '0').toLocaleString('en-US', {
                       minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
                     })}
-                  </p>
+                  </div>
                 </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={12}>
-                <div>
-                  <strong>Special Income (Retirement, Child Support, or Alimony):</strong>
-                  <p className="text-muted">
-                    {application.financialDetails.hasSpecialIncome ? '✓ Yes' : '✗ No'}
-                  </p>
+                <div className="data-item">
+                  <div className="data-label">Special Income</div>
+                  <div className="data-value">
+                    {application.financialDetails.hasSpecialIncome ? 'Yes' : 'No'}
+                  </div>
                 </div>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      )}
+              </div>
+            </div>
+          )}
+        </div>
 
-      {!application.projectDetails && (
-        <Card className="mb-4">
-          <Card.Header className="bg-info text-white">
-            <Card.Title className="mb-0">Loan Information</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <Row>
-              <Col md={6}>
-                <div>
-                  <strong>Requested Amount:</strong>
-                  <p className="text-muted">
-                    ${parseFloat(application.basicDetails.requestedAmount || '0').toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
-                </div>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      )}
-
-      <Card className="mb-4 bg-light">
-        <Card.Body>
-          <Row>
-            <Col md={6}>
-              <small>
-                <strong>Created:</strong>
-                <p className="text-muted mb-0">{new Date(application.createdAt).toLocaleString()}</p>
-              </small>
-            </Col>
-            <Col md={6}>
-              <small>
-                <strong>Last Updated:</strong>
-                <p className="text-muted mb-0">{new Date(application.updatedAt).toLocaleString()}</p>
-              </small>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-
-      <div className="text-center">
-        <Button variant="outline-secondary" onClick={() => router.back()}>
-          ← Back to Applications
-        </Button>
+        <div className="right-column">
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">
+                <i className="fa-regular fa-clipboard"></i> Summary
+              </div>
+            </div>
+            <div className="mb-4">
+              <div className="data-label">Requested Amount</div>
+              <div className="data-value" style={{ fontSize: '24px', color: 'var(--primary-color)' }}>
+                ${parseFloat(application.basicDetails.requestedAmount || application.projectDetails?.expectedFinancingAmount || '0').toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })}
+              </div>
+            </div>
+            <div className="mb-4">
+              <div className="data-label">Created At</div>
+              <div className="data-value">{new Date(application.createdAt).toLocaleString()}</div>
+            </div>
+            <div className="mb-4">
+              <div className="data-label">Last Updated</div>
+              <div className="data-value">{new Date(application.updatedAt).toLocaleString()}</div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

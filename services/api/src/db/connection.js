@@ -1,14 +1,14 @@
-﻿const { execSync } = require('child_process');
+const { execSync } = require('child_process');
 require('dotenv').config();
 
 let connectionTested = false;
 
 async function getConnection() {
   if (!connectionTested) {
-    const dbServer = process.env.DB_SERVER || 'GDCIT-LAPT388\\FAMEEDA';
+    const dbServer = process.env.DB_SERVER || '.';
     const dbName = process.env.DB_NAME || 'los_db';
     try {
-      execSync(`sqlcmd -S "${dbServer}" -E -d "${dbName}" -Q "SELECT 1"`, {
+      execSync(`sqlcmd -S "${dbServer}" -E -C -d "${dbName}" -Q "SELECT 1"`, {
         stdio: 'pipe',
         encoding: 'utf8'
       });
@@ -39,7 +39,7 @@ class Request {
   }
 
   async query(sql) {
-    const dbServer = process.env.DB_SERVER || 'GDCIT-LAPT388\\FAMEEDA';
+    const dbServer = process.env.DB_SERVER || '.';
     const dbName = process.env.DB_NAME || 'los_db';
     const fs = require('fs');
     const path = require('path');
@@ -74,7 +74,7 @@ class Request {
         if (isSelect) {
           // For SELECT queries, output as CSV with pipe delimiter
           const output = execSync(
-            `sqlcmd -S "${dbServer}" -E -d "${dbName}" -i "${tempFile}" -s "|"`,
+            `sqlcmd -S "${dbServer}" -E -C -d "${dbName}" -i "${tempFile}" -s "|"`,
             {
               encoding: 'utf8',
               stdio: 'pipe',
@@ -85,7 +85,7 @@ class Request {
         } else {
           // For INSERT/UPDATE/DELETE
           console.log('[DB] Executing query:', finalSql);
-          const result = execSync(`sqlcmd -S "${dbServer}" -E -d "${dbName}" -i "${tempFile}"`, {
+          const result = execSync(`sqlcmd -S "${dbServer}" -E -C -d "${dbName}" -i "${tempFile}"`, {
             stdio: 'pipe',
             encoding: 'utf8'
           });

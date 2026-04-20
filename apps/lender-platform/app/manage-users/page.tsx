@@ -170,32 +170,30 @@ export default function ManageUsersPage() {
     setError(null);
   };
 
-  const getLevelBadgeColor = (level: string) => {
+  const getLevelInfo = (level: string) => {
     switch (level) {
-      case 'L1':
-        return 'bg-info';
-      case 'L2':
-        return 'bg-warning';
-      case 'L3':
-        return 'bg-danger';
-      default:
-        return 'bg-secondary';
+      case 'L1': return { color: 'emerald', label: 'Level 1' };
+      case 'L2': return { color: 'amber', label: 'Level 2' };
+      case 'L3': return { color: 'rose', label: 'Level 3' };
+      default: return { color: 'blue', label: level };
     }
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    return role === 'Admin' ? 'bg-danger' : 'bg-secondary';
+  const getRoleInfo = (role: string) => {
+    return role === 'Admin' 
+      ? { color: 'purple', label: 'Administrator' } 
+      : { color: 'blue', label: 'Read-Only' };
   };
 
   const content = (
-    <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="py-4">
+      <div className="d-flex justify-content-between align-items-end mb-5">
         <div>
-          <h2>Manage Users</h2>
-          <p className="text-muted">Create and manage user accounts</p>
+          <h2 className="fw-bold mb-1">Manage Users</h2>
+          <p className="text-muted">Maintain team access and permission levels</p>
         </div>
         <Button 
-          variant="primary" 
+          className="btn-primary-custom"
           onClick={() => {
             setEditingId(null);
             setFormData({
@@ -209,68 +207,90 @@ export default function ManageUsersPage() {
             setShowModal(true);
           }}
         >
-          + Create User
+          <i className="fa-solid fa-plus me-2"></i>
+          Create New User
         </Button>
       </div>
 
-      {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>{error}</Alert>}
+      {error && <Alert variant="danger" className="border-0 shadow-sm" onClose={() => setError(null)} dismissible>{error}</Alert>}
 
-      <Card>
+      <Card className="border-0 shadow-sm">
         <Card.Body className="p-0">
           {loading ? (
-            <p className="p-3 text-muted">Loading users...</p>
+            <div className="p-5 text-center">
+              <div className="spinner-border text-primary" role="status"></div>
+              <p className="mt-3 text-muted">Loading user accounts...</p>
+            </div>
           ) : users.length === 0 ? (
-            <p className="p-3 text-muted">No users yet. Create your first user to get started.</p>
+            <div className="p-5 text-center">
+              <p className="text-muted fs-5">No user accounts found.</p>
+            </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <Table hover className="mb-0">
-                <thead className="table-light">
+            <div className="table-responsive">
+              <Table className="align-middle border-0 mb-0">
+                <thead>
                   <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th style={{ textAlign: 'center' }}>Level</th>
-                    <th style={{ textAlign: 'center' }}>Role</th>
-                    <th>Created Date</th>
-                    <th style={{ textAlign: 'center' }}>Action</th>
+                    <th>User Details</th>
+                    <th>Email Address</th>
+                    <th>Level</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th className="text-end px-4">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map(user => (
-                    <tr key={user.id}>
-                      <td>{user.firstName}</td>
-                      <td>{user.lastName}</td>
-                      <td>{user.email}</td>
-                      <td style={{ textAlign: 'center' }}>
-                        <span className={`badge ${getLevelBadgeColor(user.level)}`}>
-                          {user.level}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <span className={`badge ${getRoleBadgeColor(user.role)}`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td style={{ textAlign: 'center' }}>
-                        <Button 
-                          variant="outline-primary" 
-                          size="sm"
-                          className="me-2"
-                          onClick={() => handleEdit(user)}
-                        >
-                          Edit
-                        </Button>
-                        <Button 
-                          variant="outline-danger" 
-                          size="sm"
-                          onClick={() => handleDeleteClick(user.id)}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {users.map(user => {
+                    const level = getLevelInfo(user.level);
+                    const role = getRoleInfo(user.role);
+                    return (
+                      <tr key={user.id}>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <div className="avatar me-3" style={{ width: '32px', height: '32px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--primary-color)' }}>
+                              {user.firstName[0]}{user.lastName[0]}
+                            </div>
+                            <div>
+                              <div className="fw-bold">{user.firstName} {user.lastName}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="text-muted">{user.email}</td>
+                        <td>
+                          <div className="dot-label">
+                            <div className={`dot-indicator ${level.color}`}></div>
+                            <span>{level.label}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="dot-label">
+                            <div className={`dot-indicator ${role.color}`}></div>
+                            <span>{role.label}</span>
+                          </div>
+                        </td>
+                        <td className="text-muted">
+                          <small>{new Date(user.createdAt).toLocaleDateString()}</small>
+                        </td>
+                        <td className="text-end px-4">
+                          <div className="d-flex gap-2 justify-content-end">
+                            <button 
+                              className="action-btn-circle edit" 
+                              title="Edit User"
+                              onClick={() => handleEdit(user)}
+                            >
+                              <i className="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button 
+                              className="action-btn-circle delete" 
+                              title="Delete User"
+                              onClick={() => handleDeleteClick(user.id)}
+                            >
+                              <i className="fa-regular fa-trash-can"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
             </div>
@@ -404,7 +424,7 @@ export default function ManageUsersPage() {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </div>
   );
 
   return <AdminLayout platformName="Lender">{content}</AdminLayout>;

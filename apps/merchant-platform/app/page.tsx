@@ -53,36 +53,33 @@ export default function Dashboard() {
 
   const content = (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-end mb-5">
         <div>
-          <h2>Dashboard</h2>
-          <p className="text-muted">Welcome to the Merchant Platform</p>
+          <h2 className="fw-bold mb-1">Merchant Dashboard</h2>
+          <p className="text-muted">Monitor your customer pipeline and manage applications</p>
         </div>
         <Button 
-          variant="primary" 
-          size="lg" 
+          className="btn-primary-custom" 
           onClick={() => router.push('/create-application')}
         >
-          + Create Application
+          <i className="fas fa-plus me-2"></i> Create Application
         </Button>
       </div>
 
-      <Row className="mb-4">
+      <Row className="mb-5">
         <Col md={3}>
-          <Card>
-            <Card.Body>
-              <h5>Total Applications</h5>
-              <h2 className="text-primary">{applications.length}</h2>
-            </Card.Body>
-          </Card>
+          <div className="card stat-card">
+            <div className="stat-label">Total Applications</div>
+            <div className="stat-value text-primary-custom">{applications.length}</div>
+            <i className="fa-regular fa-file-lines stat-icon"></i>
+          </div>
         </Col>
         <Col md={3}>
-          <Card>
-            <Card.Body>
-              <h5>Approved</h5>
-              <h2 className="text-success">{approvedApplications.length}</h2>
-            </Card.Body>
-          </Card>
+          <div className="card stat-card">
+            <div className="stat-label">Approved Applications</div>
+            <div className="stat-value text-success-custom">{approvedApplications.length}</div>
+            <i className="fa-regular fa-circle-check stat-icon"></i>
+          </div>
         </Col>
       </Row>
 

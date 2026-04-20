@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import AdminLayout from '@/components/AdminLayout';
 import ApplicationFlow from '@/components/ApplicationFlow';
 
@@ -21,72 +21,48 @@ export default function CreateApplicationPage() {
   }
 
   const content = (
-    <>
-      <div className="mb-4">
-        <h2>Create New Application</h2>
-        <p className="text-muted">Choose how you want to create this application</p>
+    <div className="py-4">
+      <div className="mb-5">
+        <h2 className="fw-bold mb-2">Create New Application</h2>
+        <p className="text-muted fs-5">Select a workflow to begin onboarding your customer.</p>
       </div>
 
-      <Row>
-        <Col md={6}>
-          <Card className="h-100">
-            <Card.Body>
-              <div style={{ textAlign: 'center' }}>
-                <i
-                  className="fas fa-envelope"
-                  style={{
-                    fontSize: '48px',
-                    color: '#3b82f6',
-                    marginBottom: '16px',
-                    display: 'block',
-                  }}
-                ></i>
-                <h4>Customer Led Flow</h4>
-                <p className="text-muted" style={{ marginBottom: '20px' }}>
-                  Fill basic details and send a link to your customer to complete the application
-                </p>
-                <Button
-                  variant="primary"
-                  onClick={() => handleSelectFlow('customer-led')}
-                  className="w-100"
-                >
-                  Start Customer Led Flow
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+      <Row className="g-4">
+        <Col lg={5} md={6}>
+          <div className="selection-card blue" onClick={() => handleSelectFlow('customer-led')}>
+            <div className="selection-icon-box">
+              <i className="fa-regular fa-paper-plane"></i>
+            </div>
+            <div className="selection-title">Customer Led Flow</div>
+            <p className="selection-desc">
+              Ideal for remote onboarding. Enter basic details and we'll send a secure link 
+              directly to your customer to complete their own application.
+            </p>
+            <button className="selection-btn">
+              <span>Start Customer Flow</span>
+              <i className="fa-solid fa-arrow-right-long"></i>
+            </button>
+          </div>
         </Col>
 
-        <Col md={6}>
-          <Card className="h-100">
-            <Card.Body>
-              <div style={{ textAlign: 'center' }}>
-                <i
-                  className="fas fa-user-tie"
-                  style={{
-                    fontSize: '48px',
-                    color: '#10b981',
-                    marginBottom: '16px',
-                    display: 'block',
-                  }}
-                ></i>
-                <h4>Contractor Led Flow</h4>
-                <p className="text-muted" style={{ marginBottom: '20px' }}>
-                  Fill the complete application on behalf of your customer
-                </p>
-                <Button
-                  variant="success"
-                  onClick={() => handleSelectFlow('contractor-led')}
-                  className="w-100"
-                >
-                  Start Contractor Led Flow
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+        <Col lg={5} md={6}>
+          <div className="selection-card green" onClick={() => handleSelectFlow('contractor-led')}>
+            <div className="selection-icon-box">
+              <i className="fa-regular fa-pen-to-square"></i>
+            </div>
+            <div className="selection-title">Contractor Led Flow</div>
+            <p className="selection-desc">
+              Best for in-person sales. Use this option to fill out the complete 
+              application yourself while sitting with the customer.
+            </p>
+            <button className="selection-btn">
+              <span>Start Full Onboarding</span>
+              <i className="fa-solid fa-arrow-right-long"></i>
+            </button>
+          </div>
         </Col>
       </Row>
-    </>
+    </div>
   );
 
   return <AdminLayout platformName="Merchant">{content}</AdminLayout>;

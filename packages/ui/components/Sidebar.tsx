@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from './Sidebar.module.css';
 
 interface SidebarItem {
@@ -18,7 +18,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ brand, items, onSignOut }) => {
   const router = useRouter();
-  const currentPath = useRouter().pathname;
+  const currentPath = usePathname();
 
   return (
     <aside className={styles.sidebar}>

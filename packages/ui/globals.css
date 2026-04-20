@@ -1,30 +1,36 @@
 :root {
-  --primary-color: #3b82f6;
-  --secondary-color: #1a222b;
-  --bg-color: #f4f7fa;
-  --text-main: #1e293b;
+  --primary-color: #1652f0;
+  --secondary-color: #0f1a34;
+  --bg-color: #f9f9f9;
+  --text-main: #302d43;
   --text-muted: #64748b;
   --text-light: #94a3b8;
-  --sidebar-width: 260px;
+  --sidebar-width: 280px;
   --header-height: 70px;
   --white: #ffffff;
   --border-color: #e2e8f0;
-  --radius: 8px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --radius: 6px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
 
   /* Status Colors */
   --status-approved: #10b981;
   --status-pending: #f59e0b;
-  --status-inprogress: #3b82f6;
+  --status-inprogress: #1652f0;
   --status-rejected: #ef4444;
+
+  /* Sidebar Specific */
+  --sidebar-bg: #0f1a34;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: rgba(255, 255, 255, 0.6);
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 html,

@@ -62,87 +62,93 @@ export default function ApplicationsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: { [key: string]: string } = {
-      'draft': 'secondary',
-      'pending': 'warning',
-      'in-progress': 'info',
-      'approved': 'success',
-      'rejected': 'danger',
-    };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+    return (
+      <span className={`status-badge status-${status.toLowerCase()}`}>
+        {status}
+      </span>
+    );
   };
 
   const content = (
-    <>
-      <div className="mb-4">
-        <h2>All Applications</h2>
-        <p className="text-muted">View all your loan applications</p>
+    <div className="py-4">
+      <div className="mb-5">
+        <h2 className="fw-bold mb-1">All Applications</h2>
+        <p className="text-muted">View all your loan applications in one place</p>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm">
         <Card.Body className="p-0">
           {loading && (
-            <p className="p-3 text-muted mb-0">Loading applications...</p>
+            <div className="p-5 text-center">
+              <div className="spinner-border text-primary" role="status"></div>
+              <p className="mt-3 text-muted">Loading applications...</p>
+            </div>
           )}
           {error && (
-            <div className="alert alert-danger m-3">
+            <div className="alert alert-danger m-3 border-0">
               {error}
             </div>
           )}
           {!loading && applications.length === 0 && (
-            <p className="p-3 text-muted mb-0">No applications yet</p>
+            <div className="p-5 text-center">
+              <p className="text-muted fs-5">No applications yet</p>
+            </div>
           )}
           {!loading && applications.length > 0 && (
-            <div style={{ overflowX: 'auto' }}>
-              <Table hover className="mb-0">
-                <thead className="table-light">
+            <div className="table-responsive">
+              <Table className="align-middle border-0">
+                <thead>
                   <tr>
                     <th>Customer Name</th>
                     <th>Email</th>
-                    <th>Requested Amount</th>
+                    <th>Requested</th>
                     <th>Flow Type</th>
                     <th>Status</th>
                     <th>Verification</th>
                     <th>Address</th>
                     <th>Date</th>
-                    <th>Action</th>
+                    <th className="text-end px-4">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {applications.map(app => (
                     <tr key={app.id}>
-                      <td>{app.customerName}</td>
-                      <td>{app.customerEmail}</td>
-                      <td>${parseFloat(app.loanAmount || '0').toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}</td>
+                      <td className="fw-semibold">{app.customerName}</td>
+                      <td className="text-muted" style={{ fontSize: '13px' }}>{app.customerEmail}</td>
+                      <td className="fw-bold">
+                        ${parseFloat(app.loanAmount || '0').toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                        })}
+                      </td>
                       <td>
-                        <Badge bg={app.flowType === 'customer-led' ? 'info' : 'secondary'}>
-                          {app.flowType === 'customer-led' ? 'Customer Led' : 'Contractor Led'}
-                        </Badge>
+                        <span className="flow-badge">
+                          {app.flowType === 'customer-led' ? 'Customer' : 'Contractor'}
+                        </span>
                       </td>
                       <td>{getStatusBadge(app.status)}</td>
                       <td>
-                        <small>
-                          {app.phoneVerified ? <Badge bg="success">Phone ✓</Badge> : <Badge bg="light">Phone</Badge>}
-                          {' '}
-                          {app.ssnVerified ? <Badge bg="success">SSN ✓</Badge> : <Badge bg="light">SSN</Badge>}
+                        <div className="d-flex gap-2">
+                          <span title="Phone Verified" style={{ color: app.phoneVerified ? '#10b981' : '#e2e8f0' }}>
+                            <i className="fa-solid fa-phone" style={{ fontSize: '12px' }}></i>
+                          </span>
+                          <span title="SSN Verified" style={{ color: app.ssnVerified ? '#10b981' : '#e2e8f0' }}>
+                            <i className="fa-solid fa-id-card" style={{ fontSize: '12px' }}></i>
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <small className="text-muted">
+                          {app.projectAddress?.city || app.applicantAddress?.city || '—'}
+                          {', '}
+                          {app.projectAddress?.state || app.applicantAddress?.state || '—'}
                         </small>
                       </td>
                       <td>
-                        <small className="text-muted" style={{ maxWidth: '150px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {app.projectAddress?.city && app.projectAddress?.state 
-                            ? `${app.projectAddress.city}, ${app.projectAddress.state}`
-                            : app.applicantAddress?.city && app.applicantAddress?.state
-                            ? `${app.applicantAddress.city}, ${app.applicantAddress.state}`
-                            : '—'}
-                        </small>
+                        <small className="text-muted">{new Date(app.createdAt).toLocaleDateString()}</small>
                       </td>
-                      <td>{new Date(app.createdAt).toLocaleDateString()}</td>
-                      <td>
+                      <td className="text-end px-4">
                         <Button 
-                          variant="outline-primary" 
+                          className="btn-outline-custom"
                           size="sm"
                           onClick={() => router.push(`/application/${app.id}`)}
                         >
@@ -157,7 +163,7 @@ export default function ApplicationsPage() {
           )}
         </Card.Body>
       </Card>
-    </>
+    </div>
   );
 
   return <AdminLayout platformName="Merchant">{content}</AdminLayout>;
