@@ -82,11 +82,6 @@ export default function Dashboard() {
 
   const content = (
     <>
-      <div className="mb-5">
-        <h2 className="fw-bold mb-1">Overview</h2>
-        <p className="text-muted">Analyze your lending pipeline and application statuses</p>
-      </div>
-
       <Row className="mb-5">
         <Col md={3}>
           <div className="card stat-card">

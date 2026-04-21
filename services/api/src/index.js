@@ -41,5 +41,25 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`API Server running on port ${PORT}`);
-  require('./db/connection').getConnection().catch(err => console.error('[DB] Init error:', err.message));
+  require('./db/connection').getConnection()
+    .then(async (pool) => {
+      // Auto-migrate: add sub_status column if it doesn't exist
+      try {
+        const req = pool.request();
+        await req.query(`
+          IF NOT EXISTS (
+            SELECT * FROM sys.columns 
+            WHERE object_id = OBJECT_ID('applications') AND name = 'sub_status'
+          )
+          BEGIN
+            ALTER TABLE applications ADD sub_status VARCHAR(100) DEFAULT 'pending with lender';
+            UPDATE applications SET sub_status = 'pending with lender' WHERE status = 'pending' AND sub_status IS NULL;
+          END
+        `);
+        console.log('[DB] sub_status column ready');
+      } catch (err) {
+        console.warn('[DB] sub_status migration skipped:', err.message);
+      }
+    })
+    .catch(err => console.error('[DB] Init error:', err.message));
 });

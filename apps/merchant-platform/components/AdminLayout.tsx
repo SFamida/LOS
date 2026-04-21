@@ -30,6 +30,11 @@ export default function AdminLayout({ children, platformName }: AdminLayoutProps
       icon: 'fa-regular fa-square-plus',
     },
     {
+      label: 'Link Sent',
+      href: '/link-sent',
+      icon: 'fa-regular fa-paper-plane',
+    },
+    {
       label: 'Applications',
       icon: 'fa-regular fa-folder-open',
       submenu: [

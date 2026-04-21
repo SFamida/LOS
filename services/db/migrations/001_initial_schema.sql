@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS applications (
   loan_purpose VARCHAR(255),
   flow_type ENUM('customer-led', 'contractor-led') NOT NULL,
   status ENUM('draft', 'pending', 'in-progress', 'approved', 'rejected') DEFAULT 'pending',
+  sub_status VARCHAR(100) DEFAULT 'pending with lender',
   phone_verified BOOLEAN DEFAULT FALSE,
   ssn_verified BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

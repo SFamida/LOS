@@ -17,16 +17,15 @@ export default function CreateApplicationPage() {
   };
 
   if (selectedFlow) {
-    return <ApplicationFlow flow={selectedFlow} onBack={handleBack} />;
+    return (
+      <AdminLayout platformName="Merchant">
+        <ApplicationFlow flow={selectedFlow} onBack={handleBack} />
+      </AdminLayout>
+    );
   }
 
   const content = (
     <div className="py-4">
-      <div className="mb-5">
-        <h2 className="fw-bold mb-2">Create New Application</h2>
-        <p className="text-muted fs-5">Select a workflow to begin onboarding your customer.</p>
-      </div>
-
       <Row className="g-4">
         <Col lg={5} md={6}>
           <div className="selection-card blue" onClick={() => handleSelectFlow('customer-led')}>
