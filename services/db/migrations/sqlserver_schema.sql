@@ -22,6 +22,7 @@ BEGIN
         loan_purpose VARCHAR(255),
         flow_type VARCHAR(50) NOT NULL,
         status VARCHAR(50) DEFAULT 'pending',
+        sub_status VARCHAR(100) DEFAULT 'pending with lender',
         phone_verified BIT DEFAULT 0,
         ssn_verified BIT DEFAULT 0,
         project_address_line VARCHAR(255),

@@ -144,7 +144,7 @@ export default function ApplicationDetail() {
           <div>
             <div className="header-label">Applicant Name</div>
             <div className="header-value">
-              {application.basicDetails.firstName} {application.basicDetails.lastName}
+              {application.basicDetails?.firstName} {application.basicDetails?.lastName}
             </div>
             <div className="header-subvalue">Application ID: {application.id}</div>
           </div>
@@ -174,27 +174,27 @@ export default function ApplicationDetail() {
             <div className="data-section">
               <div className="data-item">
                 <div className="data-label">First Name</div>
-                <div className="data-value">{application.basicDetails.firstName}</div>
+                <div className="data-value">{application.basicDetails?.firstName}</div>
               </div>
               <div className="data-item">
                 <div className="data-label">Last Name</div>
-                <div className="data-value">{application.basicDetails.lastName}</div>
+                <div className="data-value">{application.basicDetails?.lastName}</div>
               </div>
               <div className="data-item">
                 <div className="data-label">Email Address</div>
-                <div className="data-value">{application.basicDetails.email}</div>
+                <div className="data-value">{application.basicDetails?.email}</div>
               </div>
               <div className="data-item">
                 <div className="data-label">Phone Number</div>
-                <div className="data-value">{application.basicDetails.phoneNumber}</div>
+                <div className="data-value">{application.basicDetails?.phoneNumber}</div>
               </div>
               <div className="data-item">
                 <div className="data-label">SSN</div>
-                <div className="data-value">{application.basicDetails.ssn}</div>
+                <div className="data-value">{application.basicDetails?.ssn}</div>
               </div>
               <div className="data-item">
                 <div className="data-label">Date of Birth</div>
-                <div className="data-value">{new Date(application.basicDetails.dateOfBirth).toLocaleDateString()}</div>
+                <div className="data-value">{application.basicDetails?.dateOfBirth ? new Date(application.basicDetails.dateOfBirth).toLocaleDateString() : ''}</div>
               </div>
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function ApplicationDetail() {
             <div className="mb-4">
               <div className="data-label">Requested Amount</div>
               <div className="data-value" style={{ fontSize: '24px', color: 'var(--primary-color)' }}>
-                ${parseFloat(application.basicDetails.requestedAmount || application.projectDetails?.expectedFinancingAmount || '0').toLocaleString('en-US', {
+                ${parseFloat(application.basicDetails?.requestedAmount || application.projectDetails?.expectedFinancingAmount || '0').toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                 })}
               </div>

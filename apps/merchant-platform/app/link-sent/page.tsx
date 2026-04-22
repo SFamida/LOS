@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Row, Col, Card, Table, Badge } from 'react-bootstrap';
+import { Card, Table, Button } from 'react-bootstrap';
 import AdminLayout from '@/components/AdminLayout';
 import apiClient from '@/lib/api';
 
@@ -16,23 +16,10 @@ interface Application {
   status: string;
   phoneVerified?: boolean;
   ssnVerified?: boolean;
-  projectAddress?: {
-    addressLine?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-  };
-  applicantAddress?: {
-    addressLine?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-  };
   createdAt: string;
-  updatedAt: string;
 }
 
-export default function ApplicationsPage() {
+export default function LinkSentPage() {
   const router = useRouter();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +35,7 @@ export default function ApplicationsPage() {
       setError(null);
       const response = await apiClient.get('/applications');
       if (response.data.success && response.data.data) {
-        setApplications(response.data.data.filter((app: Application) => app.flowType === 'contractor-led'));
+        setApplications(response.data.data.filter((app: Application) => app.flowType === 'customer-led'));
       } else {
         setApplications([]);
       }
@@ -71,10 +58,6 @@ export default function ApplicationsPage() {
 
   const content = (
     <div className="py-4">
-      <div className="mb-4">
-        <h1 className="page-title">All Applications</h1>
-        <p className="page-subtitle">View all your loan applications in one place</p>
-      </div>
       <Card className="border-0 shadow-sm">
         <Card.Body className="p-0">
           {loading && (
@@ -90,7 +73,7 @@ export default function ApplicationsPage() {
           )}
           {!loading && applications.length === 0 && (
             <div className="p-5 text-center">
-              <p className="text-muted fs-5">No applications yet</p>
+              <p className="text-muted fs-5">No links sent yet</p>
             </div>
           )}
           {!loading && applications.length > 0 && (
@@ -100,11 +83,9 @@ export default function ApplicationsPage() {
                   <tr>
                     <th>Customer Name</th>
                     <th>Email</th>
-                    <th>Requested</th>
-                    <th>Flow Type</th>
+                    <th>Requested Amount</th>
                     <th>Status</th>
                     <th>Verification</th>
-                    <th>Address</th>
                     <th>Date</th>
                     <th className="text-end px-4">Action</th>
                   </tr>
@@ -119,11 +100,6 @@ export default function ApplicationsPage() {
                           minimumFractionDigits: 2,
                         })}
                       </td>
-                      <td>
-                        <span className="flow-badge">
-                          {app.flowType === 'customer-led' ? 'Customer' : 'Contractor'}
-                        </span>
-                      </td>
                       <td>{getStatusBadge(app.status)}</td>
                       <td>
                         <div className="d-flex gap-2">
@@ -136,23 +112,15 @@ export default function ApplicationsPage() {
                         </div>
                       </td>
                       <td>
-                        <small className="text-muted">
-                          {app.projectAddress?.city || app.applicantAddress?.city || '—'}
-                          {', '}
-                          {app.projectAddress?.state || app.applicantAddress?.state || '—'}
-                        </small>
-                      </td>
-                      <td>
                         <small className="text-muted">{new Date(app.createdAt).toLocaleDateString()}</small>
                       </td>
                       <td className="text-end px-4">
-                        <Button 
-                          variant="link"
-                          className="p-0 text-primary-custom"
+                        <Button
+                          className="btn-outline-custom"
+                          size="sm"
                           onClick={() => router.push(`/application/${app.id}`)}
-                          title="View Details"
                         >
-                          <i className="fa-regular fa-eye action-icon"></i>
+                          View Details
                         </Button>
                       </td>
                     </tr>

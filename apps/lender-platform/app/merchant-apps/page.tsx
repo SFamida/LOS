@@ -25,7 +25,7 @@ export default function MerchantAppsPage() {
       try {
         const response = await apiClient.get('/applications');
         if (response.data.success) {
-          setApplications(response.data.data);
+          setApplications([]);
         } else {
           setError(response.data.message || 'Failed to fetch applications');
         }
@@ -49,11 +49,6 @@ export default function MerchantAppsPage() {
 
   const content = (
     <div className="py-4">
-      <div className="mb-5">
-        <h2 className="fw-bold mb-1">Merchant Applications</h2>
-        <p className="text-muted">Global view of all system applications</p>
-      </div>
-
       {error && <Alert variant="danger" className="border-0 shadow-sm mb-4">{error}</Alert>}
 
       <Card className="border-0 shadow-sm">

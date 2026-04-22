@@ -135,23 +135,6 @@ export default function AdminLayout({ children, platformName }: AdminLayoutProps
 
       {/* Main Content */}
       <div className="main-wrapper">
-        {/* Header */}
-        <header>
-          <div className="header-actions">
-            <button className="notification-btn" aria-label="Notifications">
-              <i className="fa-regular fa-bell"></i>
-              <span className="notification-badge">3</span>
-            </button>
-            <button className="tickets-btn">Support Tickets</button>
-            <div className="user-profile">
-              <div className="avatar">
-                <i className="fa-regular fa-user"></i>
-              </div>
-              <span className="user-name">Admin User</span>
-            </div>
-          </div>
-        </header>
-
         {/* Page Content */}
         <div className="content">
           {children}

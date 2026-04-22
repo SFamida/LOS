@@ -54,10 +54,7 @@ export default function Dashboard() {
   const content = (
     <>
       <div className="d-flex justify-content-between align-items-end mb-5">
-        <div>
-          <h2 className="fw-bold mb-1">Merchant Dashboard</h2>
-          <p className="text-muted">Monitor your customer pipeline and manage applications</p>
-        </div>
+        <div></div>
         <Button 
           className="btn-primary-custom" 
           onClick={() => router.push('/create-application')}

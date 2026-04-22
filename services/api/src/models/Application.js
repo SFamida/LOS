@@ -45,7 +45,8 @@ class ApplicationModel {
         .input('customerEmail', null, email)
         .input('loanAmount', null, parseFloat(requestedAmount) || 0)
         .input('flowType', null, flowType)
-        .input('status', null, flowType === 'customer-led' ? 'draft' : 'pending')
+        .input('status', null, 'pending')
+        .input('subStatus', null, 'pending with lender')
         .input('projectAddressLine', null, addressLine1)
         .input('projectCity', null, city1)
         .input('projectState', null, state1)
@@ -54,16 +55,48 @@ class ApplicationModel {
         .input('applicantCity', null, city2)
         .input('applicantState', null, state2)
         .input('applicantZipCode', null, zip2)
-        .input('sameAsApplicantAddress', null, sameAsApplicantAddress ? 1 : 0)
-        .query(`
+        .input('sameAsApplicantAddress', null, sameAsApplicantAddress ? 1 : 0);
+
+      try {
+        await request.query(`
           INSERT INTO applications 
-          (id, application_token, customer_name, customer_email, loan_amount, flow_type, status, 
+          (id, application_token, customer_name, customer_email, loan_amount, flow_type, status, sub_status,
            project_address_line, project_city, project_state, project_zip_code,
            applicant_address_line, applicant_city, applicant_state, applicant_zip_code, same_as_applicant_address)
-          VALUES (@id, @applicationToken, @customerName, @customerEmail, @loanAmount, @flowType, @status,
+          VALUES (@id, @applicationToken, @customerName, @customerEmail, @loanAmount, @flowType, @status, @subStatus,
                   @projectAddressLine, @projectCity, @projectState, @projectZipCode,
                   @applicantAddressLine, @applicantCity, @applicantState, @applicantZipCode, @sameAsApplicantAddress)
         `);
+      } catch (insertErr) {
+        // sub_status column may not exist yet — insert without it
+        const requestFallback = pool.request();
+        await requestFallback
+          .input('id', null, applicationId)
+          .input('applicationToken', null, applicationToken)
+          .input('customerName', null, `${firstName} ${lastName}`)
+          .input('customerEmail', null, email)
+          .input('loanAmount', null, parseFloat(requestedAmount) || 0)
+          .input('flowType', null, flowType)
+          .input('status', null, 'pending')
+          .input('projectAddressLine', null, addressLine1)
+          .input('projectCity', null, city1)
+          .input('projectState', null, state1)
+          .input('projectZipCode', null, zip1)
+          .input('applicantAddressLine', null, addressLine2)
+          .input('applicantCity', null, city2)
+          .input('applicantState', null, state2)
+          .input('applicantZipCode', null, zip2)
+          .input('sameAsApplicantAddress', null, sameAsApplicantAddress ? 1 : 0)
+          .query(`
+            INSERT INTO applications 
+            (id, application_token, customer_name, customer_email, loan_amount, flow_type, status,
+             project_address_line, project_city, project_state, project_zip_code,
+             applicant_address_line, applicant_city, applicant_state, applicant_zip_code, same_as_applicant_address)
+            VALUES (@id, @applicationToken, @customerName, @customerEmail, @loanAmount, @flowType, @status,
+                    @projectAddressLine, @projectCity, @projectState, @projectZipCode,
+                    @applicantAddressLine, @applicantCity, @applicantState, @applicantZipCode, @sameAsApplicantAddress)
+          `);
+      }
 
       // Insert into application_details table
       const request2 = pool.request();
@@ -130,7 +163,8 @@ class ApplicationModel {
         id: applicationId,
         applicationToken,
         flowType,
-        status: flowType === 'customer-led' ? 'draft' : 'pending',
+        status: 'pending',
+        subStatus: 'pending with lender',
         basicDetails: {
           firstName,
           lastName,
@@ -150,7 +184,8 @@ class ApplicationModel {
         id: applicationId,
         applicationToken,
         flowType,
-        status: flowType === 'customer-led' ? 'draft' : 'pending',
+        status: 'pending',
+        subStatus: 'pending with lender',
         basicDetails: {
           firstName,
           lastName,
@@ -173,7 +208,8 @@ class ApplicationModel {
         id: fallbackId,
         applicationToken,
         flowType,
-        status: flowType === 'customer-led' ? 'draft' : 'pending',
+        status: 'pending',
+        subStatus: 'pending with lender',
         basicDetails: {
           firstName,
           lastName,
@@ -193,7 +229,8 @@ class ApplicationModel {
         id: fallbackId,
         applicationToken,
         flowType,
-        status: flowType === 'customer-led' ? 'draft' : 'pending',
+        status: 'pending',
+        subStatus: 'pending with lender',
         basicDetails: {
           firstName,
           lastName,
@@ -216,17 +253,35 @@ class ApplicationModel {
       try {
         const pool = await getConnection();
         const request = pool.request();
-        const result = await request
-          .input('token', null, token)
-          .query(`
-            SELECT id, application_token, customer_name, customer_email, loan_amount, 
-                   flow_type, status, phone_verified, ssn_verified, 
-                   project_address_line, project_city, project_state, project_zip_code,
-                   applicant_address_line, applicant_city, applicant_state, applicant_zip_code,
-                   created_at, updated_at
-            FROM applications 
-            WHERE application_token = @token
-          `);
+        // Look up by application_token first (customer flow), then by id (lender/merchant view details)
+        let result;
+        try {
+          result = await request
+            .input('token', null, token)
+            .query(`
+              SELECT id, application_token, customer_name, customer_email, loan_amount, 
+                     flow_type, status, sub_status, phone_verified, ssn_verified, 
+                     project_address_line, project_city, project_state, project_zip_code,
+                     applicant_address_line, applicant_city, applicant_state, applicant_zip_code,
+                     created_at, updated_at
+              FROM applications 
+              WHERE application_token = @token OR id = @token
+            `);
+        } catch (colErr) {
+          // sub_status column may not exist yet — retry without it
+          const request2b = pool.request();
+          result = await request2b
+            .input('token', null, token)
+            .query(`
+              SELECT id, application_token, customer_name, customer_email, loan_amount, 
+                     flow_type, status, phone_verified, ssn_verified, 
+                     project_address_line, project_city, project_state, project_zip_code,
+                     applicant_address_line, applicant_city, applicant_state, applicant_zip_code,
+                     created_at, updated_at
+              FROM applications 
+              WHERE application_token = @token OR id = @token
+            `);
+        }
 
         if (result.recordset && result.recordset.length > 0) {
           const app = result.recordset[0];
@@ -242,16 +297,41 @@ class ApplicationModel {
 
           const details = detailsResult.recordset[0] || {};
 
+          // Fallback: derive names from customer_name if application_details is missing
+          const customerNameParts = (app.customer_name || '').split(' ');
+          const fallbackFirst = customerNameParts[0] || '';
+          const fallbackLast = customerNameParts.slice(1).join(' ') || '';
+
+          // Get project details
+          const request3 = pool.request();
+          const projectResult = await request3
+            .input('applicationId', null, app.id)
+            .query(`
+              SELECT * FROM project_details 
+              WHERE application_id = @applicationId
+            `);
+
+          const project = projectResult.recordset[0] || null;
+
+          // Get financial details
+          const request4 = pool.request();
+          const financialResult = await request4
+            .input('applicationId', null, app.id)
+            .query(`
+              SELECT * FROM financial_details 
+              WHERE application_id = @applicationId
+            `);
+
+          const financial = financialResult.recordset[0] || null;
+
           console.log(`[APP] Retrieved application ${app.id} from database`);
 
           return {
             id: app.id,
             applicationToken: app.application_token,
-            customerName: app.customer_name,
-            customerEmail: app.customer_email,
-            loanAmount: app.loan_amount,
             flowType: app.flow_type,
             status: app.status,
+            subStatus: app.sub_status || 'pending with lender',
             phoneVerified: app.phone_verified == 1 || app.phone_verified === true,
             ssnVerified: app.ssn_verified == 1 || app.ssn_verified === true,
             projectAddress: {
@@ -267,14 +347,26 @@ class ApplicationModel {
               zipCode: app.applicant_zip_code,
             },
             basicDetails: {
-              firstName: details.first_name,
-              lastName: details.last_name,
-              email: details.email,
-              phoneNumber: details.phone_number,
-              ssn: details.ssn,
-              dateOfBirth: details.date_of_birth,
-              requestedAmount: details.requested_amount,
+              firstName: details.first_name || fallbackFirst,
+              lastName: details.last_name || fallbackLast,
+              email: details.email || app.customer_email,
+              phoneNumber: details.phone_number || null,
+              ssn: details.ssn || null,
+              dateOfBirth: details.date_of_birth || null,
+              requestedAmount: details.requested_amount || app.loan_amount,
             },
+            projectDetails: project ? {
+              expectedFinancingAmount: project.expected_financing_amount,
+              projectType: project.project_type,
+              projectAddress: project.project_address,
+              sameAsApplicantAddress: project.same_as_applicant_address == 1 || project.same_as_applicant_address === true,
+              applicantAddress: project.applicant_address,
+            } : null,
+            financialDetails: financial ? {
+              annualIncome: financial.annual_income,
+              monthlyIncome: financial.monthly_income,
+              hasSpecialIncome: financial.has_special_income == 1 || financial.has_special_income === true,
+            } : null,
             createdAt: app.created_at,
             updatedAt: app.updated_at,
           };
@@ -283,8 +375,17 @@ class ApplicationModel {
         console.warn(`[APP] Database query failed: ${dbError.message}`);
       }
 
-      // Fallback to in-memory storage
-      const app = applicationStorage.get(token);
+      // Fallback to in-memory storage - check by token key first, then scan by id
+      let app = applicationStorage.get(token);
+      if (!app) {
+        // token param might be an app id, scan in-memory storage
+        for (const stored of applicationStorage.values()) {
+          if (stored.id === token) {
+            app = stored;
+            break;
+          }
+        }
+      }
       if (app) {
         console.log(`[APP] Retrieved application from in-memory storage`);
         return app;
@@ -303,16 +404,32 @@ class ApplicationModel {
       try {
         const pool = await getConnection();
         const request = pool.request();
-        const result = await request.query(`
-          SELECT id, application_token, customer_name, customer_email, loan_amount, 
-                 flow_type, status, phone_verified, ssn_verified, 
-                 project_address_line, project_city, project_state, project_zip_code,
-                 applicant_address_line, applicant_city, applicant_state, applicant_zip_code,
-                 created_at, updated_at
-          FROM applications 
-          WHERE status != 'draft'
-          ORDER BY created_at DESC
-        `);
+        let allResult;
+        try {
+          allResult = await request.query(`
+            SELECT id, application_token, customer_name, customer_email, loan_amount, 
+                   flow_type, status, sub_status, phone_verified, ssn_verified, 
+                   project_address_line, project_city, project_state, project_zip_code,
+                   applicant_address_line, applicant_city, applicant_state, applicant_zip_code,
+                   created_at, updated_at
+            FROM applications 
+            WHERE status != 'draft'
+            ORDER BY created_at DESC
+          `);
+        } catch (colErr) {
+          const request2b = pool.request();
+          allResult = await request2b.query(`
+            SELECT id, application_token, customer_name, customer_email, loan_amount, 
+                   flow_type, status, phone_verified, ssn_verified, 
+                   project_address_line, project_city, project_state, project_zip_code,
+                   applicant_address_line, applicant_city, applicant_state, applicant_zip_code,
+                   created_at, updated_at
+            FROM applications 
+            WHERE status != 'draft'
+            ORDER BY created_at DESC
+          `);
+        }
+        const result = allResult;
 
         if (result.recordset && result.recordset.length > 0) {
           console.log(`[APP] Retrieved ${result.recordset.length} applications from database`);
@@ -324,6 +441,7 @@ class ApplicationModel {
             loanAmount: app.loan_amount,
             flowType: app.flow_type,
             status: app.status,
+            subStatus: app.sub_status || 'pending with lender',
             phoneVerified: app.phone_verified == 1 || app.phone_verified === true,
             ssnVerified: app.ssn_verified == 1 || app.ssn_verified === true,
             projectAddress: {
