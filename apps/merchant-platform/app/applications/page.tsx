@@ -71,9 +71,9 @@ export default function ApplicationsPage() {
 
   const content = (
     <div className="py-4">
-      <div className="mb-5">
-        <h2 className="fw-bold mb-1">All Applications</h2>
-        <p className="text-muted">View all your loan applications in one place</p>
+      <div className="mb-4">
+        <h1 className="page-title">All Applications</h1>
+        <p className="page-subtitle">View all your loan applications in one place</p>
       </div>
 
       <Card className="border-0 shadow-sm">
@@ -148,11 +148,12 @@ export default function ApplicationsPage() {
                       </td>
                       <td className="text-end px-4">
                         <Button 
-                          className="btn-outline-custom"
-                          size="sm"
+                          variant="link"
+                          className="p-0 text-primary-custom"
                           onClick={() => router.push(`/application/${app.id}`)}
+                          title="View Details"
                         >
-                          View Details
+                          <i className="fa-regular fa-eye action-icon"></i>
                         </Button>
                       </td>
                     </tr>

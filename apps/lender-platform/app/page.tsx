@@ -82,12 +82,12 @@ export default function Dashboard() {
 
   const content = (
     <>
-      <div className="mb-5">
-        <h2 className="fw-bold mb-1">Overview</h2>
-        <p className="text-muted">Analyze your lending pipeline and application statuses</p>
+      <div className="mb-4">
+        <h1 className="page-title">Overview</h1>
+        <p className="page-subtitle">Analyze your lending pipeline and application statuses</p>
       </div>
 
-      <Row className="mb-5">
+      <Row className="mb-4">
         <Col md={3}>
           <div className="card stat-card">
             <div className="stat-label">Total Applications</div>
@@ -143,7 +143,7 @@ export default function Dashboard() {
                     <th>Flow Type</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th>Action</th>
+                    <th className="text-end px-4">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -157,35 +157,38 @@ export default function Dashboard() {
                       <td>{getFlowTypeBadge(app.flowType)}</td>
                       <td>{getStatusBadge(app.status)}</td>
                       <td>{new Date(app.createdAt).toLocaleDateString()}</td>
-                      <td>
-                        <div className="d-flex gap-2">
+                      <td className="text-end px-4">
+                        <div className="d-flex gap-3 justify-content-end align-items-center">
                           <Button 
-                            className="btn-outline-custom"
-                            size="sm"
+                            variant="link"
+                            className="p-0 text-primary-custom"
                             onClick={() => router.push(`/application/${app.applicationToken}`)}
+                            title="View Details"
                           >
-                            View Details
+                            <i className="fa-regular fa-eye action-icon"></i>
                           </Button>
-                          {app.status === 'pending' && (
-                            <>
-                              <Button 
-                                variant="success" 
-                                size="sm"
-                                onClick={() => handleApprove(app.id)}
-                                disabled={approving === app.id}
-                              >
-                                {approving === app.id ? 'Approving...' : 'Approve'}
-                              </Button>
-                              <Button 
-                                className="btn-danger-custom"
-                                size="sm"
-                                onClick={() => handleReject(app.id)}
-                                disabled={approving === app.id}
-                              >
-                                {approving === app.id ? 'Rejecting...' : 'Reject'}
-                              </Button>
-                            </>
-                          )}
+                          
+                          <Button 
+                            variant="link" 
+                            className={`p-0 ${app.status === 'pending' ? 'text-success-custom' : 'text-secondary opacity-25'}`}
+                            onClick={() => app.status === 'pending' && handleApprove(app.id)}
+                            disabled={approving === app.id || app.status !== 'pending'}
+                            title={app.status === 'pending' ? 'Approve' : 'Action not available'}
+                            style={{ cursor: app.status === 'pending' ? 'pointer' : 'default' }}
+                          >
+                            <i className="fa-solid fa-circle-check action-icon"></i>
+                          </Button>
+                          
+                          <Button 
+                            variant="link" 
+                            className={`p-0 ${app.status === 'pending' ? 'text-danger-custom' : 'text-secondary opacity-25'}`}
+                            onClick={() => app.status === 'pending' && handleReject(app.id)}
+                            disabled={approving === app.id || app.status !== 'pending'}
+                            title={app.status === 'pending' ? 'Reject' : 'Action not available'}
+                            style={{ cursor: app.status === 'pending' ? 'pointer' : 'default' }}
+                          >
+                            <i className="fa-solid fa-circle-xmark action-icon"></i>
+                          </Button>
                         </div>
                       </td>
                     </tr>

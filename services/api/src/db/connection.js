@@ -153,7 +153,11 @@ class Request {
       const record = {};
 
       headers.forEach((header, index) => {
-        const value = values[index] ? values[index].trim() : '';
+        let value = values[index] ? values[index].trim() : '';
+        // SQLCMD returns 'NULL' for actual NULL values in many output modes
+        if (value === 'NULL' || value === 'null') {
+          value = null;
+        }
         record[header] = value || null;
       });
 

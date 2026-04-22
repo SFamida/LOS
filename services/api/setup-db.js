@@ -113,6 +113,15 @@ async function setupDatabase() {
           status VARCHAR(50) DEFAULT 'pending',
           phone_verified BIT DEFAULT 0,
           ssn_verified BIT DEFAULT 0,
+          project_address_line VARCHAR(255),
+          project_city VARCHAR(100),
+          project_state VARCHAR(50),
+          project_zip_code VARCHAR(20),
+          applicant_address_line VARCHAR(255),
+          applicant_city VARCHAR(100),
+          applicant_state VARCHAR(50),
+          applicant_zip_code VARCHAR(20),
+          same_as_applicant_address BIT DEFAULT 0,
           created_at DATETIME DEFAULT GETDATE(),
           updated_at DATETIME DEFAULT GETDATE()
         );
@@ -121,7 +130,71 @@ async function setupDatabase() {
         CREATE INDEX idx_application_token ON applications(application_token);
       END
     `);
-    console.log('    ✓ applications table created/verified\n');
+    console.log('    ✓ applications table created/verified');
+
+    // Application Details table
+    console.log('  Creating application_details table...');
+    await pool.request().query(`
+      IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'application_details')
+      BEGIN
+        CREATE TABLE application_details (
+          id VARCHAR(255) PRIMARY KEY,
+          application_id VARCHAR(255) NOT NULL,
+          first_name VARCHAR(255),
+          last_name VARCHAR(255),
+          phone_number VARCHAR(20),
+          email VARCHAR(255),
+          ssn VARCHAR(20),
+          date_of_birth DATE,
+          requested_amount DECIMAL(15, 2),
+          created_at DATETIME DEFAULT GETDATE(),
+          updated_at DATETIME DEFAULT GETDATE(),
+          FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
+        );
+        CREATE INDEX idx_app_id ON application_details(application_id);
+      END
+    `);
+    console.log('    ✓ application_details table created/verified');
+
+    // Project Details table
+    console.log('  Creating project_details table...');
+    await pool.request().query(`
+      IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'project_details')
+      BEGIN
+        CREATE TABLE project_details (
+          id VARCHAR(255) PRIMARY KEY,
+          application_id VARCHAR(255) NOT NULL,
+          expected_financing_amount DECIMAL(15, 2),
+          project_type VARCHAR(255),
+          same_as_applicant_address BIT DEFAULT 0,
+          created_at DATETIME DEFAULT GETDATE(),
+          updated_at DATETIME DEFAULT GETDATE(),
+          FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
+        );
+        CREATE INDEX idx_proj_app_id ON project_details(application_id);
+      END
+    `);
+    console.log('    ✓ project_details table created/verified');
+
+    // Financial Details table
+    console.log('  Creating financial_details table...');
+    await pool.request().query(`
+      IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'financial_details')
+      BEGIN
+        CREATE TABLE financial_details (
+          id VARCHAR(255) PRIMARY KEY,
+          application_id VARCHAR(255) NOT NULL,
+          annual_income DECIMAL(15, 2),
+          monthly_income DECIMAL(15, 2),
+          has_special_income BIT DEFAULT 0,
+          created_at DATETIME DEFAULT GETDATE(),
+          updated_at DATETIME DEFAULT GETDATE(),
+          FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
+        );
+        CREATE INDEX idx_fin_app_id ON financial_details(application_id);
+      END
+    `);
+    console.log('    ✓ financial_details table created/verified\n');
 
     // Step 5: Verify tables
     console.log('Step 5: Verifying tables...');

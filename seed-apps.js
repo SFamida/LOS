@@ -15,7 +15,11 @@ async function seedApplications() {
         email: 'alice@example.com',
         amount: 25000,
         flow: 'contractor-led',
-        status: 'pending'
+        status: 'pending',
+        phoneVerified: 1,
+        ssnVerified: 0,
+        city: 'Seattle',
+        state: 'WA'
       },
       {
         id: 'APP-SEED-2',
@@ -24,7 +28,11 @@ async function seedApplications() {
         email: 'bob@example.com',
         amount: 15000,
         flow: 'customer-led',
-        status: 'submitted'
+        status: 'submitted',
+        phoneVerified: 1,
+        ssnVerified: 1,
+        city: 'Austin',
+        state: 'TX'
       },
       {
         id: 'APP-SEED-3',
@@ -33,7 +41,11 @@ async function seedApplications() {
         email: 'charlie@example.com',
         amount: 50000,
         flow: 'contractor-led',
-        status: 'approved'
+        status: 'approved',
+        phoneVerified: 1,
+        ssnVerified: 1,
+        city: 'Denver',
+        state: 'CO'
       }
     ];
 
@@ -46,10 +58,16 @@ async function seedApplications() {
         .input('amount', null, app.amount)
         .input('flow', null, app.flow)
         .input('status', null, app.status)
+        .input('phoneVerified', null, app.phoneVerified)
+        .input('ssnVerified', null, app.ssnVerified)
+        .input('city', null, app.city)
+        .input('state', null, app.state)
         .query(`
           IF NOT EXISTS (SELECT 1 FROM applications WHERE id = @id)
-          INSERT INTO applications (id, application_token, customer_name, customer_email, loan_amount, flow_type, status)
-          VALUES (@id, @token, @name, @email, @amount, @flow, @status)
+          INSERT INTO applications (id, application_token, customer_name, customer_email, loan_amount, flow_type, status, phone_verified, ssn_verified, project_city, project_state)
+          VALUES (@id, @token, @name, @email, @amount, @flow, @status, @phoneVerified, @ssnVerified, @city, @state)
+          ELSE
+          UPDATE applications SET phone_verified = @phoneVerified, ssn_verified = @ssnVerified, project_city = @city, project_state = @state WHERE id = @id
         `);
       console.log(`- Seeded application: ${app.name}`);
     }
